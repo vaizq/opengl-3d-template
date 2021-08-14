@@ -1,7 +1,6 @@
 #include <iostream>
-#include "bar.h"
 
-int main()
+int main(int argc, char **argv)
 {
-    foo();
+    std::cout << "Hello world!" << std::endl;
 }

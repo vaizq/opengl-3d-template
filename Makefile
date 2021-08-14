@@ -1,5 +1,5 @@
 CC = g++
-PROG= app
+PROG= app.out
 
 ODIR :=bin
 SDIR :=src
@@ -12,7 +12,6 @@ OBJ := $(addprefix $(ODIR)/,$(OBJ))
 
 LIBS:=
 CFLAGS:=-I $(LDIR)/ 
-
 
 $(ODIR)/$(PROG): $(OBJ)
 	$(CC) -o $@ $(CFLAGS) $^ 
