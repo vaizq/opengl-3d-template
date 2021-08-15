@@ -1,5 +1,6 @@
 CC = g++
 PROG= app.out
+TEST_PROG = test.out
 
 ODIR :=bin
 SDIR :=src
@@ -24,22 +25,26 @@ LIBS:=
 CFLAGS:=-I$(LDIR)/
 CFLAGS_TEST := $(CFLAGS) -I$(SDIR)/
 
-# TODO Make all lib sources in obj folder
-
-
+<<<<<<< HEAD
+>>>>>> main
 $(ODIR)/$(PROG): $(OBJ)
 	$(CC) -o $@ $(CFLAGS) $^ 
 
-
+# Build object files
 $(ODIR)/%.o: $(SDIR)/%.cpp
 	$(CC) -c -o $@ $^ $(CFLAGS) $(LIBS)
 
-
+# Build lib used for testing
 $(TDIR)/catch_amalgamated.o: $(LDIR)/catch_amalgamated.cpp
 	$(CC) -c -o $@ $(CFLAGS) $^ 
 
+# Build object files for tests
 $(TDIR)/%.o: $(TDIR)/%.cpp
 	$(CC) -c -o $@ $(CFLAGS_TEST) $^ 
+
+# Link test objects to make test program
+$(TDIR)/$(TEST_PROG) : $(TEST_OBJ) $(TDIR)/catch_amalgamated.o $(patsubst $(ODIR)/main.o, ,$(OBJ)) 
+	$(CC) -o $@ $^
 
 .PHONY: clean
 clean:
@@ -50,8 +55,7 @@ run:
 	./$(ODIR)/$(PROG)
 
 .PHONY: test
-test: $(TEST_OBJ) $(TDIR)/catch_amalgamated.o $(patsubst $(ODIR)/main.o, ,$(OBJ)) 
-	$(CC) -o $(TDIR)/test.out $^
-	./$(TDIR)/test.out
+test : $(TDIR)/$(TEST_PROG) 
+	./$(TDIR)/$(TEST_PROG)
 
 
