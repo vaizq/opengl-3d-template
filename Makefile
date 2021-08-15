@@ -1,4 +1,6 @@
 CC = g++
+CC_C = gcc
+
 PROG= app.out
 TEST_PROG = test.out
 
@@ -12,8 +14,9 @@ OBJ := $(patsubst $(SDIR)/%,%,$(SOURCES))
 OBJ := $(patsubst %.cpp,%.o,$(OBJ))
 OBJ := $(addprefix $(ODIR)/,$(OBJ))
 
-LIB_SOURCES := $(wildcard $(LDIR)/*.cpp)
+LIB_SOURCES := $(wildcard $(LDIR)/*.c*)
 LIB_OBJ := $(patsubst $(LDIR)/%,%,$(LIB_SOURCES))
+LIB_OBJ := $(patsubst %.c,%.o,$(LIB_OBJ))
 LIB_OBJ := $(patsubst %.cpp,%.o,$(LIB_OBJ))
 LIB_OBJ := $(addprefix $(ODIR)/,$(LIB_OBJ))
 
@@ -21,32 +24,38 @@ LIB_OBJ := $(addprefix $(ODIR)/,$(LIB_OBJ))
 TEST_SRC := $(wildcard $(TDIR)/*.cpp)
 TEST_OBJ := $(patsubst %.cpp,%.o,$(TEST_SRC))
 
-LIBS:=
-CFLAGS:=-I$(LDIR)/
+LIBS := -lglfw3 -lGL -lX11 -lpthread -lXrandr -lXi -ldl
+
+
+CFLAGS := -I$(LDIR)/ $(LIBS)
 CFLAGS_TEST := $(CFLAGS) -I$(SDIR)/
 
-$(ODIR)/$(PROG): $(OBJ) $(LIB_OBJ)
-	$(CC) -o $@ $(CFLAGS) $^ 
+$(ODIR)/$(PROG) : $(OBJ) $(LIB_OBJ)
+	$(CC) -o $@ $^ $(CFLAGS) 
 
 # Build object files from sources
-$(ODIR)/%.o: $(SDIR)/%.cpp
-	$(CC) -c -o $@ $^ $(CFLAGS) $(LIBS)
+$(ODIR)/%.o : $(SDIR)/%.cpp
+	$(CC) -c -o $@ $^ $(CFLAGS) 
 
 # Build libs
+# c and cpp files
 $(ODIR)/%.o : $(LDIR)/%.cpp
-	$(CC) -c -o $@ $^ $(CFLAGS) $(LIBS)
+	$(CC) -c -o $@ $^ $(CFLAGS) 
+
+$(ODIR)/%.o : $(LDIR)/%.c
+	$(CC_C) -c -o $@ $^ $(CFLAGS)
 
 # Build lib used for testing
-$(TDIR)/catch_amalgamated.o: $(TDIR)/catch_amalgamated.cpp
-	$(CC) -c -o $@ $(CFLAGS) $^ 
+$(TDIR)/catch_amalgamated.o : $(TDIR)/catch_amalgamated.cpp
+	$(CC) -c -o $@ $^ $(CFLAGS) 
 
 # Build object files for tests
-$(TDIR)/%.o: $(TDIR)/%.cpp
-	$(CC) -c -o $@ $(CFLAGS_TEST) $^ 
+$(TDIR)/%.o : $(TDIR)/%.cpp
+	$(CC) -c -o $@ $(CFLAGS_TEST) $^ $(CFLAGS_TEST) 
 
 # Link test objects to make test program
 $(TDIR)/$(TEST_PROG) : $(TEST_OBJ) $(TDIR)/catch_amalgamated.o $(patsubst $(ODIR)/main.o, ,$(OBJ)) 
-	$(CC) -o $@ $^
+	$(CC) -o $@ $^ $(CFLAGS_TEST) 
 
 .PHONY: clean
 clean:
