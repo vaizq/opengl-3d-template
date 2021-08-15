@@ -15,7 +15,8 @@ TEST_SRC := $(wildcard $(TDIR)/*.cpp)
 TEST_OBJ := $(patsubst %.cpp,%.o,$(TEST_SRC))
 
 LIBS:=
-CFLAGS:=-I$(LDIR)
+CFLAGS:=-I$(LDIR)/
+CFLAGS_TEST := $(CFLAGS) -I$(SDIR)/
 
 $(ODIR)/$(PROG): $(OBJ)
 	$(CC) -o $@ $(CFLAGS) $^ 
@@ -26,16 +27,14 @@ $(ODIR)/%.o: $(SDIR)/%.cpp
 
 
 $(TDIR)/catch_amalgamated.o: $(LDIR)/catch_amalgamated.cpp
-	$(CC) -c -o $@ $^ $(CFLAGS)
-
+	$(CC) -c -o $@ $(CFLAGS) $^ 
 
 $(TDIR)/%.o: $(TDIR)/%.cpp
-	$(CC) -c -o $@ $^ $(CFLAGS)
-
+	$(CC) -c -o $@ $(CFLAGS_TEST) $^ 
 
 .PHONY: clean
 clean:
-	rm $(ODIR)/*.o $(ODIR)/*.out $(TDIR)/*.o $(TDIR)/*.out
+	rm -f $(ODIR)/*.o $(ODIR)/*.out $(TDIR)/*.o $(TDIR)/*.out
 
 .PHONY: run
 run:
