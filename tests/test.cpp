@@ -1,5 +1,4 @@
 #include "catch_amalgamated.hpp"
-#include "tool.h"
 
 
 unsigned int Factorial( unsigned int number ) {
@@ -7,19 +6,13 @@ unsigned int Factorial( unsigned int number ) {
 }
 
 TEST_CASE( "Factorials are computed", "[factorial]" ) {
-    Tool tool;
-    REQUIRE( tool.kertoma(1) == 1);
+
+    REQUIRE( Factorial(0) == 1);
 
     constexpr int MAX = 10;
 
-    SECTION( "Small factorials" )
+    SECTION( "Simple factorials" )
     {
-        for(int i = 1; i < MAX/2; i++)
-            REQUIRE( tool.kertoma(i) == Factorial(i) );
-    }
-    SECTION( "Large factorials" )
-    {
-         for(int i = 1; i < MAX; i++)
-            REQUIRE( tool.kertoma(i) == Factorial(i) );
+        REQUIRE( Factorial(3) == 6 );
     }
 }
