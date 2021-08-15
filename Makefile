@@ -25,17 +25,19 @@ LIBS:=
 CFLAGS:=-I$(LDIR)/
 CFLAGS_TEST := $(CFLAGS) -I$(SDIR)/
 
-<<<<<<< HEAD
->>>>>> main
-$(ODIR)/$(PROG): $(OBJ)
+$(ODIR)/$(PROG): $(OBJ) $(LIB_OBJ)
 	$(CC) -o $@ $(CFLAGS) $^ 
 
-# Build object files
+# Build object files from sources
 $(ODIR)/%.o: $(SDIR)/%.cpp
 	$(CC) -c -o $@ $^ $(CFLAGS) $(LIBS)
 
+# Build libs
+$(ODIR)/%.o : $(LDIR)/%.cpp
+	$(CC) -c -o $@ $^ $(CFLAGS) $(LIBS)
+
 # Build lib used for testing
-$(TDIR)/catch_amalgamated.o: $(LDIR)/catch_amalgamated.cpp
+$(TDIR)/catch_amalgamated.o: $(TDIR)/catch_amalgamated.cpp
 	$(CC) -c -o $@ $(CFLAGS) $^ 
 
 # Build object files for tests
