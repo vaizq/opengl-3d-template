@@ -11,12 +11,21 @@ OBJ := $(patsubst $(SDIR)/%,%,$(SOURCES))
 OBJ := $(patsubst %.cpp,%.o,$(OBJ))
 OBJ := $(addprefix $(ODIR)/,$(OBJ))
 
+LIB_SOURCES := $(wildcard $(LDIR)/*.cpp)
+LIB_OBJ := $(patsubst $(LDIR)/%,%,$(LIB_SOURCES))
+LIB_OBJ := $(patsubst %.cpp,%.o,$(LIB_OBJ))
+LIB_OBJ := $(addprefix $(ODIR)/,$(LIB_OBJ))
+
+
 TEST_SRC := $(wildcard $(TDIR)/*.cpp)
 TEST_OBJ := $(patsubst %.cpp,%.o,$(TEST_SRC))
 
 LIBS:=
 CFLAGS:=-I$(LDIR)/
 CFLAGS_TEST := $(CFLAGS) -I$(SDIR)/
+
+# TODO Make all lib sources in obj folder
+
 
 $(ODIR)/$(PROG): $(OBJ)
 	$(CC) -o $@ $(CFLAGS) $^ 
