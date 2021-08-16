@@ -1,8 +1,17 @@
-#include "glad/glad.h"
-#include <GLFW/glfw3.h>
+#include "application.hpp"
 #include <iostream>
+
 
 int main(int argc, char **argv)
 {
-    std::cout << "Hello world!" << std::endl;
+
+    Application app;
+    if(app.create() == -1)
+    {
+        std::cout << "Failed to create application." << std::endl;
+    };
+    app.run();
+    
+    return 0;
 }
+

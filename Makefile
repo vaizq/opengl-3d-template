@@ -24,10 +24,11 @@ LIB_OBJ := $(addprefix $(ODIR)/,$(LIB_OBJ))
 TEST_SRC := $(wildcard $(TDIR)/*.cpp)
 TEST_OBJ := $(patsubst %.cpp,%.o,$(TEST_SRC))
 
-LIBS := -lglfw3 -lGL -lX11 -lpthread -lXrandr -lXi -ldl
+LIBS := -lglfw3 -lGL -lX11 -lpthread -lXrandr -lXi -ldl -lassimp 
+INCLUDES := -I$(LDIR)
 
 
-CFLAGS := -I$(LDIR)/ $(LIBS)
+CFLAGS := $(INCLUDES) $(LIBS) -g
 CFLAGS_TEST := $(CFLAGS) -I$(SDIR)/
 
 $(ODIR)/$(PROG) : $(OBJ) $(LIB_OBJ)
