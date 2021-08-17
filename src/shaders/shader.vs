@@ -5,7 +5,7 @@ layout (location = 2) in vec2 aTexCoord;
 layout (location = 3) in vec3 aTangent;
 layout (location = 4) in vec3 aBiTangent;
 
-out vec2 texCoord;
+out vec2 texCoords;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -13,8 +13,8 @@ uniform mat4 projection;
 
 void main()
 {
-    gl_position = projection * view * model * vec4(aPos, 1.0);
-    texCoord = aTexCoord;
+    gl_Position = projection * view * model * vec4(aPos, 1.0);
+    texCoords = aTexCoord;
 }
 
 

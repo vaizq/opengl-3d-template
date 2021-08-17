@@ -1,5 +1,6 @@
 #include "application.hpp"
 
+
 Application::Application()
 {}
 
@@ -29,6 +30,8 @@ int Application::create()
     glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
     glfwSetFramebufferSizeCallback(m_window, framebuffer_size_callback);
 
+    glEnable(GL_DEPTH_TEST);
+
     m_model = new Model("src/res/backpack/backpack.obj");
     m_shader = new Shader("src/shaders/shader.vs", "src/shaders/shader.fs");
     m_camera = new Camera();
@@ -38,6 +41,7 @@ int Application::create()
 
 void Application::run()
 {
+
     while(!glfwWindowShouldClose(m_window))
     {
         handleInput();
@@ -48,7 +52,27 @@ void Application::run()
 
 void Application::handleInput()
 {
+    if(glfwGetKey(m_window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    {
+        glfwSetWindowShouldClose(m_window, true);
+    }
 
+    if(glfwGetKey(m_window, GLFW_KEY_W) == GLFW_PRESS)
+    {
+        m_camera->ProcessKeyboard(FORWARD, m_deltaTime);
+    }
+    if(glfwGetKey(m_window, GLFW_KEY_S) == GLFW_PRESS)
+    {
+        m_camera->ProcessKeyboard(BACKWARD, m_deltaTime);
+    }
+    if(glfwGetKey(m_window, GLFW_KEY_A) == GLFW_PRESS)
+    {
+        m_camera->ProcessKeyboard(LEFT, m_deltaTime);
+    }
+    if(glfwGetKey(m_window, GLFW_KEY_D) == GLFW_PRESS)
+    {
+        m_camera->ProcessKeyboard(RIGHT, m_deltaTime);
+    }
 }
 
 void Application::updateState()
@@ -58,8 +82,10 @@ void Application::updateState()
 
 void Application::render()
 {
+    calcDeltaTime();
+
     // Clear background
-    glClearColor(0.3f, 0.6f, 0.8f, 1.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
@@ -72,14 +98,22 @@ void Application::render()
 
     // render the loaded model
     glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
-    model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
+    model = glm::translate(model, glm::vec3(0.0f, 0.0f, -0.5f)); // translate it down so it's at the center of the scene
+    model = glm::rotate(model, 1.1f, glm::vec3(0.0f, 1.0f, 0.0f));
+    model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));	// it's a bit too big for our scene, so scale it down
     m_shader->setMat4("model", glm::value_ptr(model));
 
     m_model->Draw(*m_shader); 
     
     glfwSwapBuffers(m_window);
     glfwPollEvents();
+}
+
+void Application::calcDeltaTime()
+{
+    float curTime = glfwGetTime();
+    m_deltaTime = curTime - m_lastTime;
+    m_lastTime = curTime;
 }
 
 void framebuffer_size_callback(GLFWwindow* m_window, int width, int height)

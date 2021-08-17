@@ -1,16 +1,18 @@
-#include "model.hpp"   
-#include <iostream>
+#include "model.hpp"
+
 #define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
+#include <stb_image.h>
 
 
-using namespace std;
-
-Model::Model(string const &path, bool gamma) : gammaCorrection(gamma)
+Model::Model(const string &path, bool gamma) 
+    : gammaCorrection(gamma)
 {
+
+    stbi_set_flip_vertically_on_load(true);
     loadModel(path);
 }
 
+// draws the model, and thus all its meshes
 void Model::Draw(Shader &shader)
 {
     for(unsigned int i = 0; i < meshes.size(); i++)
@@ -50,6 +52,7 @@ void Model::processNode(aiNode *node, const aiScene *scene)
     {
         processNode(node->mChildren[i], scene);
     }
+
 }
 
 Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene)
@@ -68,14 +71,14 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene)
         vector.x = mesh->mVertices[i].x;
         vector.y = mesh->mVertices[i].y;
         vector.z = mesh->mVertices[i].z;
-        vertex.position = vector;
+        vertex.Position = vector;
         // normals
         if (mesh->HasNormals())
         {
             vector.x = mesh->mNormals[i].x;
             vector.y = mesh->mNormals[i].y;
             vector.z = mesh->mNormals[i].z;
-            vertex.normal = vector;
+            vertex.Normal = vector;
         }
         // texture coordinates
         if(mesh->mTextureCoords[0]) // does the mesh contain texture coordinates?
@@ -85,36 +88,31 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene)
             // use models where a vertex can have multiple texture coordinates so we always take the first set (0).
             vec.x = mesh->mTextureCoords[0][i].x; 
             vec.y = mesh->mTextureCoords[0][i].y;
-            vertex.texCoords = vec;
+            vertex.TexCoords = vec;
             // tangent
             vector.x = mesh->mTangents[i].x;
             vector.y = mesh->mTangents[i].y;
             vector.z = mesh->mTangents[i].z;
-            vertex.tangent = vector;
+            vertex.Tangent = vector;
             // bitangent
             vector.x = mesh->mBitangents[i].x;
             vector.y = mesh->mBitangents[i].y;
             vector.z = mesh->mBitangents[i].z;
-            vertex.biTangent = vector;
+            vertex.Bitangent = vector;
         }
         else
-            vertex.texCoords = glm::vec2(0.0f, 0.0f);
+            vertex.TexCoords = glm::vec2(0.0f, 0.0f);
 
         vertices.push_back(vertex);
     }
     // now walk through each of the mesh's faces (a face is a mesh its triangle) and retrieve the corresponding vertex indices.
     for(unsigned int i = 0; i < mesh->mNumFaces; i++)
     {
-        std::cout << "OK" << std::endl;
-        const aiFace face = mesh->mFaces[i];
-        std::cout << "OK 2" << std::endl;
+        aiFace face = mesh->mFaces[i];
         // retrieve all indices of the face and store them in the indices vector
-        for(unsigned long j = 0; j < face.mNumIndices; j++)
-        {
-            indices.push_back( face.mIndices[j]);        
-        }
+        for(unsigned int j = 0; j < face.mNumIndices; j++)
+            indices.push_back(face.mIndices[j]);        
     }
-
     // process materials
     aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];    
     // we assume a convention for sampler names in the shaders. Each diffuse texture should be named
@@ -123,6 +121,7 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene)
     // diffuse: texture_diffuseN
     // specular: texture_specularN
     // normal: texture_normalN
+
     // 1. diffuse maps
     vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
     textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
@@ -139,7 +138,7 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene)
     // return a mesh object created from the extracted mesh data
     return Mesh(vertices, indices, textures);
 }
-    
+
 vector<Texture> Model::loadMaterialTextures(aiMaterial *mat, aiTextureType type, string typeName)
 {
     vector<Texture> textures;
@@ -207,6 +206,9 @@ unsigned int TextureFromFile(const char *path, const string &directory, bool gam
         std::cout << "Texture failed to load at path: " << path << std::endl;
         stbi_image_free(data);
     }
+
     return textureID;
 }
+
+
 

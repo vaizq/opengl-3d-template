@@ -29,11 +29,18 @@ private:
     Camera *m_camera;
     Model *m_model;
     Shader *m_shader;
+
+    float m_deltaTime;
+    float m_lastTime;
     
 private:
     void handleInput();
     void updateState();
     void render();
+
+    void calcDeltaTime();
+
+    // callback functions
 };
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
