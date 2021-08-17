@@ -2,7 +2,9 @@
 
 
 Application::Application()
-{}
+{
+    Application::GLFWCallbackWrapper::SetApplication(this);
+}
 
 int Application::create()
 {
@@ -19,7 +21,9 @@ int Application::create()
         glfwTerminate();
         return -1;
     }
+
     glfwMakeContextCurrent(m_window);
+    glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); 
 
      if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
@@ -36,12 +40,13 @@ int Application::create()
     m_shader = new Shader("src/shaders/shader.vs", "src/shaders/shader.fs");
     m_camera = new Camera();
 
+    setCallbackFunctions();
+
     return 0;
 }
 
 void Application::run()
 {
-
     while(!glfwWindowShouldClose(m_window))
     {
         handleInput();
@@ -114,6 +119,52 @@ void Application::calcDeltaTime()
     float curTime = glfwGetTime();
     m_deltaTime = curTime - m_lastTime;
     m_lastTime = curTime;
+}
+// Callback functions
+void Application::mousePosCallback(GLFWwindow* window, double posX, double posY)
+{
+    if(!m_mouse.posInited)
+    {
+        m_mouse.posX = posX;
+        m_mouse.posY = posY;
+        m_mouse.posInited = true;
+    }
+    else
+    {
+        float offsetX = posX - m_mouse.posX; 
+        float offsetY = posY - m_mouse.posY;
+        m_camera->ProcessMouseMovement(offsetX, offsetY);
+        m_mouse.posX = posX;
+        m_mouse.posY = posY;
+    }
+}
+void Application::keyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+}
+void Application::setCallbackFunctions()
+{
+    GLFWCallbackWrapper::SetApplication(this);
+    glfwSetCursorPosCallback(m_window, GLFWCallbackWrapper::MousePositionCallback);
+    glfwSetKeyCallback(m_window, GLFWCallbackWrapper::KeyboardCallback);
+}
+
+
+// Callback wrappers functions 
+void Application::GLFWCallbackWrapper::MousePositionCallback(GLFWwindow* window, double positionX, double positionY)
+{
+    s_application->mousePosCallback(window, positionX, positionY);
+}
+
+void Application::GLFWCallbackWrapper::KeyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    s_application->keyboardCallback(window, key, scancode, action, mods);
+}
+
+Application* Application::GLFWCallbackWrapper::s_application = nullptr;
+
+void Application::GLFWCallbackWrapper::SetApplication(Application *application)
+{
+    GLFWCallbackWrapper::s_application = application;
 }
 
 void framebuffer_size_callback(GLFWwindow* m_window, int width, int height)
