@@ -7,7 +7,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "model.hpp"
+#include "body.hpp"
 #include "shader.hpp"
 #include "camera.hpp"
 
@@ -34,7 +34,7 @@ public:
 private:
     GLFWwindow *m_window;
     Camera *m_camera;
-    Model *m_model;
+    Body *m_body;
     Shader *m_shader;
 
     Mouse m_mouse;

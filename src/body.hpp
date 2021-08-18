@@ -21,7 +21,7 @@ public:
          const glm::vec3& scale = { 1.0f, 1.0f, 1.0f });    
     ~Body(); 
     void LoadModel(std::string fPath);
-    void translate(const glm::vec3& dPos);
+    void Translate(const glm::vec3& dPos);
     glm::mat4 GetModelMatrix();
     void Draw(Shader& shader);
     // Add simpler function for translation scaling and rotating later

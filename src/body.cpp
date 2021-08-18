@@ -24,7 +24,7 @@ void Body::LoadModel(const std::string fPath)
     m_model = new Model(fPath);
 }
 
-void Body::translate(const glm::vec3& dPos)
+void Body::Translate(const glm::vec3& dPos)
 {
     m_pos += dPos;
 }
