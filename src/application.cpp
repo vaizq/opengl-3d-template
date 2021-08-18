@@ -36,7 +36,8 @@ int Application::create()
 
     glEnable(GL_DEPTH_TEST);
     // TODO add body loading to Body()
-    m_body = new Body(glm::vec3(0.0f, 0.0f, -1.0f));
+    m_body = new Body(glm::vec3(0.0f, 0.0f, -1.0f),
+                      glm::vec3(0.1f, 0.1f, 0.1f));
     m_body->LoadModel("src/res/backpack/backpack.obj");
     m_shader = new Shader("src/shaders/shader.vs", "src/shaders/shader.fs");
     m_camera = new Camera();
@@ -101,22 +102,11 @@ void Application::render()
     glm::mat4 view = m_camera->GetViewMatrix();
     m_shader->setMat4("projection", glm::value_ptr(projection));
     m_shader->setMat4("view", glm::value_ptr(view));
-    
-    m_body->m_scale = glm::vec3(0.1f, 0.1f, 0.1f);
+
+
+    m_body->Rotate(0.1, glm::vec3(0.0f, 1.0f, 0.0f));    
     m_shader->setMat4("model", glm::value_ptr(m_body->GetModelMatrix()));
     m_body->Draw(*m_shader);
-
-/*
-    // render the loaded model
-    glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(0.0f, 0.0f, -0.5f)); // translate it down so it's at the center of the scene
-    model = glm::rotate(model, 1.1f, glm::vec3(0.0f, 1.0f, 0.0f));
-    model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));	// it's a bit too big for our scene, so scale it down
-    m_shader->setMat4("model", glm::value_ptr(model));
-
-    m_model->Draw(*m_shader); 
- */
-
 
 
 
